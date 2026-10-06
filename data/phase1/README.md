@@ -20,4 +20,17 @@ Büyük veri dosyaları GitHub deposuna yüklenmeyecektir. Veriler yalnızca yer
 
 ## Mevcut Durum
 
-Henüz veri dosyası eklenmemiştir.
+Veri dosyaları yerel çalışma ortamına eklenmiştir. Bu dosyalar `.gitignore` kuralları nedeniyle GitHub deposuna yüklenmez.
+
+### Yerel BreizhCrops Dosyaları
+
+- `classmapping.csv`
+- `frh01.csv`
+- `frh02.csv`
+- `frh03.csv`
+- `frh04.csv`
+
+### Yerel TUM CropTypes Dosyaları
+
+- `data2016-2018.xlsx`
+- `TestData.xlsx`
