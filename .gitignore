@@ -1,0 +1,19 @@
+#Python sanal ortam
+.venv/
+venv/
+
+#Python geçici dosyalar
+__pycache__/
+*.pyc
+*.pyo
+
+#Jupyter Notebook dosyaları
+.ipynb_checkpoints/
+
+#Gerçek veri dosyaları Github'a yüklenmemelidir
+data/phase1/*
+!data/phase1/README.md
+
+#işletim sistemi dosyaları
+Thumbs.db
+.DS_Store
