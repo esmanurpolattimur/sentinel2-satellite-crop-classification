@@ -17,11 +17,13 @@ data/phase1/
 # Üretilen rapor ve görseller
 output/phase1/*.pdf
 output/phase1/rendered/
-output/phase2/
 output/pdf/
 output/visuals/
 output/phase3/
 output/phase4/
+output/phase5/
+output/phase6/
+output/phase7/
 
 # Ders belgesi ve yerel çalışma notları
 sources/

@@ -106,7 +106,10 @@ anda belleğe alınmaz; parseller parça parça okunur ve çıkarılan özellikl
 │   ├── build_phase1_report.py    # Analiz özetinden PDF üretimi
 │   ├── phase2_models.py          # TUM için RF ve MLP temel modelleri
 │   ├── phase3_breizh_preprocessing.py # Breizh ön işleme ve özellik çıkarma
-│   └── phase3_breizh_rf.py       # Pilot Random Forest modeli
+│   ├── phase3_breizh_rf.py       # Pilot ve tam Random Forest modeli
+│   ├── phase5_breizh_mlp.py      # Tam veri MLP modeli
+│   ├── phase6_breizh_xgboost.py  # Tam veri XGBoost modeli
+│   └── phase7_breizh_cnn.py      # 24 dönemli 1D-CNN modeli
 ├── data/phase1/                  # Yerel veri dosyaları (Git'e yüklenmez)
 ├── breizhcrops_frh04_evidence/   # Gerçek FRH04 parsel örneği ve kanıt notu
 ├── output/phase1/                # Üretilen CSV, JSON, PNG ve PDF çıktıları
@@ -114,6 +117,9 @@ anda belleğe alınmaz; parseller parça parça okunur ve çıkarılan özellikl
 ├── run_phase2.py                 # Faz 2 temel model çalıştırıcısı
 ├── run_breizh_pilot.py           # Breizh pilot çalıştırıcısı
 ├── run_breizh_full_rf.py         # Tam Breizh Random Forest çalıştırıcısı
+├── run_breizh_mlp.py             # Tam Breizh MLP çalıştırıcısı
+├── run_breizh_xgboost.py         # Tam Breizh XGBoost çalıştırıcısı
+├── run_breizh_cnn.py             # Tam Breizh 1D-CNN çalıştırıcısı
 └── requirements.txt              # Python bağımlılıkları
 ```
 
@@ -177,6 +183,55 @@ python run_breizh_full_rf.py --sadece-model
 
 Bu aşamada da FRH04 skoru kapalıdır. `--final-testi-calistir` yalnız bütün
 özellik ve model kararları tamamlandıktan sonra kullanılmalıdır.
+
+## Tam BreizhCrops MLP
+
+Tam özellik dosyası ve Random Forest doğrulama sonucu hazır olduktan sonra MLP
+modeli şu komutla çalıştırılır:
+
+```powershell
+python run_breizh_mlp.py
+```
+
+MLP'de eksik değerlerin medyanları ve standartlaştırma değerleri yalnız
+FRH01+FRH02 eğitim bölümünden öğrenilir. Aynı dönüşümler FRH03'e uygulanır;
+böylece doğrulama verisinden eğitim sürecine bilgi sızmaz. Ağda 128 ve 64
+nöronlu iki gizli katman, ReLU, Adam, 512 batch boyutu ve erken durdurma
+kullanılır. Sonuçlar `output/phase5/mlp_full/` altında tutulur. Accuracy,
+Macro-F1 ve Balanced Accuracy yanında NLL, çok sınıflı Brier ve ECE değerleri
+de kaydedilir. FRH04 bu komutta da varsayılan olarak değerlendirilmez.
+
+## Tam BreizhCrops XGBoost
+
+Random Forest ve MLP doğrulama çalışmaları tamamlandıktan sonra XGBoost şu
+komutla çalıştırılır:
+
+```powershell
+python run_breizh_xgboost.py
+```
+
+Model, ağaçları daha az bellekle oluşturmak için `hist` yöntemini kullanır.
+Sınıf dengesizliği yalnız eğitim etiketlerinden hesaplanan satır ağırlıklarıyla
+azaltılır. FRH03 erken durdurma ve model karşılaştırması için kullanılır;
+FRH04 skoru yine varsayılan olarak kapalıdır. Sonuçlar
+`output/phase6/xgboost_full/` klasörüne kaydedilir.
+
+## Tam BreizhCrops 1D-CNN
+
+1D-CNN aşaması şu komutla çalıştırılır:
+
+```powershell
+python run_breizh_cnn.py
+```
+
+Bu model fenolojik özet kolonlarını düz bir tablo gibi kullanmaz. Her parselin
+24 yarım aylık dönemi zaman ekseni, 13 Sentinel-2 bandı ile NDVI, NDRE ve
+NDMI değerleri de 16 giriş kanalı olarak düzenlenir. İki `Conv1d` katmanı
+zamansal örüntüleri öğrenir. Eksik değer doldurma ve standartlaştırma yine
+yalnız FRH01+FRH02 üzerinden öğrenilir. Az görülen sınıflar eğitim kaybında
+dengeli sınıf ağırlığı alır. Erken durdurma FRH03 Macro-F1 değerine göre
+yapılır; FRH04 varsayılan olarak kapalıdır. Çıktılar
+`output/phase7/cnn_full/` altında tutulur.
 
 ## Kurulum
 
